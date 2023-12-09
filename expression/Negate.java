@@ -9,7 +9,11 @@ public class Negate implements TripleExpression {
 
     @Override
     public int evaluate(int x, int y, int z) {
-        return -expression.evaluate(x, y, z);
+        int result = expression.evaluate(x, y, z);
+        if (result == Integer.MIN_VALUE) {
+            throw new ArithmeticException("Overflow in negation");
+        }
+        return -result;
     }
 
     @Override

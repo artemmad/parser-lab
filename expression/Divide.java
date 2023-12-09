@@ -11,9 +11,14 @@ public class Divide extends AbstractBinaryOperation {
     }
 
     @Override
-    protected int compute(int firstArg, int secondArg) {
-        // тут по хорошему стоит еще обрабатывать деление на 0
-        return (firstArg / secondArg);
+    protected int compute(int firstOperand, int secondOperand) {
+        if (secondOperand == 0) {
+            throw new ArithmeticException("Division by zero");
+        }
+        if (firstOperand == Integer.MIN_VALUE && secondOperand == -1) {
+            throw new ArithmeticException("Overflow in division");
+        }
+        return (firstOperand / secondOperand);
     }
 
     @Override

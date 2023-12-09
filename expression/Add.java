@@ -1,5 +1,7 @@
 package expression;
 
+import expression.exceptions.OverflowException;
+
 public class Add extends AbstractBinaryOperation {
     public Add(ExpressionBase firstArg, ExpressionBase secondArg) {
         super(firstArg, secondArg);
@@ -11,8 +13,13 @@ public class Add extends AbstractBinaryOperation {
 
 
     @Override
-    public int compute(int first, int second) {
-        return first + second;
+    public int compute(int firstArg, int secondArg) {
+        if (secondArg > 0 ? firstArg > Integer.MAX_VALUE - secondArg
+                : firstArg < Integer.MIN_VALUE - secondArg) {
+            throw new OverflowException("Overflow in addition");
+        }
+        return firstArg + secondArg;
+
     }
 
     @Override

@@ -9,8 +9,13 @@ public class Subtract extends AbstractBinaryOperation {
     public Subtract(TripleExpression te1, TripleExpression te2){
         super(te1, te2);
     }
+
     @Override
     protected int compute(int firstOperand, int secondOperand) {
+        if ((secondOperand < 0 && firstOperand > Integer.MAX_VALUE + secondOperand) ||
+                (secondOperand > 0 && firstOperand < Integer.MIN_VALUE + secondOperand)) {
+            throw new ArithmeticException("Overflow in subtraction");
+        }
         return firstOperand - secondOperand;
     }
 
