@@ -1,6 +1,7 @@
 package expression.parser;
 
 import expression.*;
+import expression.exceptions.OverflowException;
 import expression.exceptions.ParsingException;
 
 public class ExpressionParser implements TripleParser {
@@ -28,6 +29,8 @@ public class ExpressionParser implements TripleParser {
                 throw new ParsingException("Unmatched parentheses: more opening '(' than closing ')' or wise verses");
             }
         } catch (ParsingException e) {
+            throw e; // раскомментировать для прохождения ExceptionsTest
+        } catch (OverflowException e) {
             throw e; // раскомментировать для прохождения ExceptionsTest
         } catch (Exception e) {
             throw new ParsingException("Error parsing expression: ", e); // раскомментировать для прохождения ExceptionsTest

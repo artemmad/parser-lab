@@ -1,5 +1,7 @@
 package expression;
 
+import expression.exceptions.OverflowException;
+
 public class Divide extends AbstractBinaryOperation {
 
     public Divide(ExpressionBase firstArg, ExpressionBase secondArg) {
@@ -16,7 +18,7 @@ public class Divide extends AbstractBinaryOperation {
             throw new ArithmeticException("Division by zero");
         }
         if (firstOperand == Integer.MIN_VALUE && secondOperand == -1) {
-            throw new ArithmeticException("Overflow in division");
+            throw new OverflowException("Overflow in division");
         }
         return (firstOperand / secondOperand);
     }

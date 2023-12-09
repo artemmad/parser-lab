@@ -1,5 +1,7 @@
 package expression;
 
+import expression.exceptions.OverflowException;
+
 public class Subtract extends AbstractBinaryOperation {
 
     public Subtract(ExpressionBase firstOperand, ExpressionBase secondOperand) {
@@ -14,7 +16,7 @@ public class Subtract extends AbstractBinaryOperation {
     protected int compute(int firstOperand, int secondOperand) {
         if ((secondOperand < 0 && firstOperand > Integer.MAX_VALUE + secondOperand) ||
                 (secondOperand > 0 && firstOperand < Integer.MIN_VALUE + secondOperand)) {
-            throw new ArithmeticException("Overflow in subtraction");
+            throw new OverflowException("Overflow in subtraction");
         }
         return firstOperand - secondOperand;
     }

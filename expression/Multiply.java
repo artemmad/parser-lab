@@ -1,5 +1,7 @@
 package expression;
 
+import expression.exceptions.OverflowException;
+
 public class Multiply extends AbstractBinaryOperation {
 
     public Multiply(ExpressionBase firstOperand, ExpressionBase secondOperand) {
@@ -15,7 +17,7 @@ public class Multiply extends AbstractBinaryOperation {
         if (firstArg > 0 ? secondArg > Integer.MAX_VALUE / firstArg || secondArg < Integer.MIN_VALUE / firstArg
                 : (firstArg < -1 ? secondArg > Integer.MIN_VALUE / firstArg || secondArg < Integer.MAX_VALUE / firstArg
                 : firstArg == -1 && secondArg == Integer.MIN_VALUE)) {
-            throw new ArithmeticException("Overflow in multiplication");
+            throw new OverflowException("Overflow in multiplication");
         }
         return firstArg * secondArg;
     }

@@ -1,5 +1,7 @@
 package expression;
 
+import expression.exceptions.OverflowException;
+
 public class Negate implements TripleExpression {
     private final TripleExpression expression;
 
@@ -11,7 +13,7 @@ public class Negate implements TripleExpression {
     public int evaluate(int x, int y, int z) {
         int result = expression.evaluate(x, y, z);
         if (result == Integer.MIN_VALUE) {
-            throw new ArithmeticException("Overflow in negation");
+            throw new OverflowException("Overflow in negation");
         }
         return -result;
     }
