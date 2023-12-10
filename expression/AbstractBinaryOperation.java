@@ -2,80 +2,45 @@ package expression;
 
 import java.util.Objects;
 
-public abstract class AbstractBinaryOperation implements ExpressionBase {
-    protected final ExpressionBase firstPart;
-    protected final ExpressionBase secondPart;
+public abstract class AbstractBinaryOperation implements BasicExpressionInterface {
+    protected final BasicExpressionInterface firstExpression;
+    protected final BasicExpressionInterface secondExpression;
 
-    protected AbstractBinaryOperation(ExpressionBase firstExpression, ExpressionBase secondExpression) {
-        this.firstPart = firstExpression;
-        this.secondPart = secondExpression;
+    protected AbstractBinaryOperation(BasicExpressionInterface firstExpression, BasicExpressionInterface secondExpression) {
+        this.firstExpression = firstExpression;
+        this.secondExpression = secondExpression;
     }
 
-    public AbstractBinaryOperation(TripleExpression first, TripleExpression second) {
-        this(new ExpressionBase() {
-            @Override
-            public int evaluate(int x) {
-                return first.evaluate(x, 0, 0);
-            }
-
-            @Override
-            public int evaluate(int x, int y, int z) {
-                return first.evaluate(x, y, z);
-            }
-
-            @Override
-            public String toString() {
-                return first.toString();
-            }
-        }, new ExpressionBase() {
-            @Override
-            public int evaluate(int x) {
-                // Аналогично первому адаптеру.
-                return second.evaluate(x, 0, 0);
-            }
-
-            @Override
-            public int evaluate(int x, int y, int z) {
-                return second.evaluate(x, y, z);
-            }
-
-            @Override
-            public String toString() {
-                return second.toString();
-            }
-        });
-    }
-
+    protected abstract int calculate(int firstOperand, int secondOperand);
     protected abstract String getOperator();
-    protected abstract int compute(int firstOperand, int secondOperand);
 
     @Override
     public int evaluate(int value) {
-        return compute(firstPart.evaluate(value), secondPart.evaluate(value));
+        return calculate(firstExpression.evaluate(value), secondExpression.evaluate(value));
     }
 
     @Override
-    public int evaluate(int value, int value2, int value3) {
-        return compute(firstPart.evaluate(value, value2, value3), secondPart.evaluate(value, value2, value3));
+    public int evaluate(int value1, int value2, int value3) {
+        return calculate(firstExpression.evaluate(value1, value2, value3), secondExpression.evaluate(value1, value2, value3));
     }
 
     @Override
     public String toString() {
-        return "(" + firstPart.toString() + this.getOperator() + secondPart.toString() + ")";
+        return "(" + firstExpression.toString() + this.getOperator() + secondExpression.toString() + ")";
     }
 
     @Override
     public boolean equals(Object object) {
-        if (object == null || object.getClass() != this.getClass()) {
-            return false;
+        if (object instanceof AbstractBinaryOperation expression) {
+            return firstExpression.equals(expression.firstExpression)
+                    && this.getClass().equals(object.getClass())
+                    && secondExpression.equals(expression.secondExpression);
         }
-        AbstractBinaryOperation binaryOperator = (AbstractBinaryOperation) object;
-        return this.firstPart.equals(binaryOperator.firstPart) &&
-                secondPart.equals(binaryOperator.secondPart);
+        return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstPart, secondPart, this.getOperator()) * 100;
+        return Objects.hash(firstExpression, secondExpression, this.getOperator()) * 300;
     }
 }

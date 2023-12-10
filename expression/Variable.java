@@ -2,7 +2,7 @@ package expression;
 
 import java.util.Objects;
 
-public class Variable implements ExpressionBase {
+public class Variable implements BasicExpressionInterface {
     private final String variable;
 
     public Variable(String variable) {
@@ -15,16 +15,13 @@ public class Variable implements ExpressionBase {
     }
 
     @Override
-    public int evaluate(int value, int value2, int value3) {
-        switch (variable) {
-            case "x":
-                return value;
-            case "y":
-                return value2;
-            case "z":
-                return value3;
+    public int evaluate(int value1, int value2, int value3) {
+        if (variable.equals("x")) {
+            return value1;
+        } else if (variable.equals("y")) {
+            return value2;
         }
-        throw new RuntimeException();
+        return value3;
     }
 
     @Override
@@ -34,15 +31,14 @@ public class Variable implements ExpressionBase {
 
     @Override
     public boolean equals(Object object) {
-        if (object == null || object.getClass() != this.getClass()) {
-            return false;
+        if (object instanceof final Variable var) {
+            return variable.equals(var.variable);
         }
-        Variable binaryOperator = (Variable) object;
-        return Objects.equals(this.variable, binaryOperator.variable);
+        return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(variable) * 100;
+        return Objects.hash(variable) * 300;
     }
 }

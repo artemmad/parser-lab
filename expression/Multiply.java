@@ -2,17 +2,13 @@ package expression;
 
 public class Multiply extends AbstractBinaryOperation {
 
-    public Multiply(ExpressionBase firstOperand, ExpressionBase secondOperand) {
+    public Multiply(BasicExpressionInterface firstOperand, BasicExpressionInterface secondOperand) {
         super(firstOperand, secondOperand);
     }
 
-    public Multiply(TripleExpression te1, TripleExpression te2) {
-        super(te1, te2);
-    }
-
     @Override
-    protected int compute(int firstArg, int secondArg) {
-        return firstArg * secondArg;
+    protected int calculate(int firstOperand, int secondOperand) {
+        return firstOperand * secondOperand;
     }
 
     @Override

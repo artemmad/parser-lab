@@ -1,6 +1,6 @@
 package expression;
 
-public class Negate implements TripleExpression {
+public class Negate implements BasicExpressionInterface {
     private final TripleExpression expression;
 
     public Negate(TripleExpression expression) {
@@ -30,5 +30,15 @@ public class Negate implements TripleExpression {
     @Override
     public int hashCode() {
         return 31 * expression.hashCode();
+    }
+
+    @Override
+    public int evaluate(int x) {
+        return  x*-1;
+    }
+
+    @Override
+    public String toMiniString() {
+        return BasicExpressionInterface.super.toMiniString();
     }
 }

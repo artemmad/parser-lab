@@ -18,9 +18,9 @@ public class ExpressionParser implements TripleParser {
         TripleExpression result = parseTerm();
         while (true) {
             if (match('+')) {
-                result = new Add(result, parseTerm());
+                result = new Add((BasicExpressionInterface) result, (BasicExpressionInterface) parseTerm());
             } else if (match('-')) {
-                result = new Subtract(result, parseTerm());
+                result = new Subtract((BasicExpressionInterface) result, (BasicExpressionInterface) parseTerm());
             } else {
                 return result;
             }
@@ -31,9 +31,9 @@ public class ExpressionParser implements TripleParser {
         TripleExpression result = parseFactor();
         while (true) {
             if (match('*')) {
-                result = new Multiply(result, parseFactor());
+                result = new Multiply((BasicExpressionInterface) result, (BasicExpressionInterface) parseFactor());
             } else if (match('/')) {
-                result = new Divide(result, parseFactor());
+                result = new Divide((BasicExpressionInterface) result, (BasicExpressionInterface) parseFactor());
             } else {
                 return result;
             }

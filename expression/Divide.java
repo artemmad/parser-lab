@@ -2,18 +2,13 @@ package expression;
 
 public class Divide extends AbstractBinaryOperation {
 
-    public Divide(ExpressionBase firstArg, ExpressionBase secondArg) {
-        super(firstArg, secondArg);
-    }
-
-    public Divide(TripleExpression te1, TripleExpression te2) {
-        super(te1, te2);
+    public Divide(BasicExpressionInterface firstOperand, BasicExpressionInterface secondOperand) {
+        super(firstOperand, secondOperand);
     }
 
     @Override
-    protected int compute(int firstArg, int secondArg) {
-        // тут по хорошему стоит еще обрабатывать деление на 0
-        return (firstArg / secondArg);
+    protected int calculate(int firstOperand, int secondOperand) {
+        return firstOperand / secondOperand;
     }
 
     @Override
