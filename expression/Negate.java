@@ -9,7 +9,8 @@ public class Negate implements BasicExpressionInterface {
 
     @Override
     public int evaluate(int x, int y, int z) {
-        return -expression.evaluate(x, y, z);
+        int result = expression.evaluate(x, y, z);
+        return -result;
     }
 
     @Override
@@ -34,11 +35,23 @@ public class Negate implements BasicExpressionInterface {
 
     @Override
     public int evaluate(int x) {
-        return  x*-1;
+        return  -x;
     }
 
     @Override
     public String toMiniString() {
-        return BasicExpressionInterface.super.toMiniString();
+        if (expression instanceof Negate) {
+            // Возвращаем строковое представление внутреннего выражения без дополнительного отрицания
+            return expression.toMiniString();
+        } else if (expression instanceof Const) {
+            int value = ((Const) expression).getValue();
+            if (value < 0) {
+                // Если выражение является отрицательной константой, просто возвращаем это значение
+                return Integer.toString(value);
+            }
+        }
+        // В остальных случаях возвращаем выражение с унарным минусом
+        return "-(" + expression.toMiniString() + ")";
     }
+
 }

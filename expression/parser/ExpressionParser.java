@@ -8,74 +8,136 @@ public class ExpressionParser implements TripleParser {
 
     public TripleExpression parse(String expression) {
         this.expression = expression;
-        System.out.println(expression);
         this.index = 0;
-        TripleExpression ex = parseExpression();
-        return ex;
+        TripleExpression res = parseExpression();
+        return res;
     }
 
     private TripleExpression parseExpression() {
         TripleExpression result = parseTerm();
-        while (true) {
-            if (match('+')) {
-                result = new Add((BasicExpressionInterface) result, (BasicExpressionInterface) parseTerm());
-            } else if (match('-')) {
-                result = new Subtract((BasicExpressionInterface) result, (BasicExpressionInterface) parseTerm());
+        while (index < expression.length()) {
+            char operation = peek();
+            if (operation == '+') {
+                consume();
+                result = createBinaryOperation(result, parseTerm(), '+');
+            } else if (operation == '-') {
+                consume();
+                result = createBinaryOperation(result, parseTerm(), '-');
             } else {
-                return result;
+                break;
             }
+        }
+        return result;
+    }
+
+    private TripleExpression createBinaryOperation(TripleExpression left, TripleExpression right, char operation) {
+        switch (operation) {
+            case '+':
+                return new Add((BasicExpressionInterface) left, (BasicExpressionInterface) right);
+            case '-':
+                return new Subtract((BasicExpressionInterface) left, (BasicExpressionInterface) right);
+            default:
+                throw new RuntimeException("Unknown operation: " + operation);
         }
     }
 
     private TripleExpression parseTerm() {
         TripleExpression result = parseFactor();
-        while (true) {
-            if (match('*')) {
+        while (index < expression.length()) {
+            char operation = peek();
+            if (operation == '*') {
+                consume();
                 result = new Multiply((BasicExpressionInterface) result, (BasicExpressionInterface) parseFactor());
-            } else if (match('/')) {
+            } else if (operation == '/') {
+                consume();
                 result = new Divide((BasicExpressionInterface) result, (BasicExpressionInterface) parseFactor());
             } else {
-                return result;
+                break;
             }
         }
+        return result;
     }
 
     private TripleExpression parseFactor() {
         skipWhitespace();
-        if (match('(')) {
+        char currentChar = peek();
+        if (currentChar == '(') {
+            consume();
             TripleExpression result = parseExpression();
             expect(')');
             return result;
-        } else if (match('-')) {
-            if (Character.isDigit(peek())) {
-                // Проверяем, является ли следующее число минимальным значением для int.
-                boolean isNegative = true;
-                return new Const(parseNumber(isNegative));
-            }
-            return new Negate(parseFactor());
-        } else if (Character.isDigit(peek())) {
+        } else if (currentChar == '-') {
+            consume();
+            return parseNegativeExpression();
+        } else if (Character.isDigit(currentChar)) {
             return new Const(parseNumber(false));
-        } else if (Character.isLetter(peek())) {
+        } else if (Character.isLetter(currentChar)) {
             return new Variable(parseVariable());
+        } else {
+            throw new RuntimeException("Unexpected character: " + currentChar);
         }
-        throw new RuntimeException("Unexpected character: " + peek());
+    }
+
+    private TripleExpression parseNegativeExpression() {
+        skipWhitespace();
+        int minusCount = 1;
+
+        while (peek() == '-') {
+            minusCount++;
+            consume();
+            skipWhitespace();
+        }
+
+        TripleExpression result;
+        boolean isNegative = minusCount % 2 != 0;
+
+        if (peek() == '(') {
+            consume();
+            result = parseExpression();
+            expect(')');
+            if (isNegative) {
+                result = new Negate(result);
+            }
+        } else if (Character.isDigit(peek())) {
+            if (minusCount == 2 && peekNext() == '2') { // Проверяем, если следующий символ после двойного минуса - '2'
+                result = new Const(parseNumber(false)); // Обрабатываем число как положительное
+            } else {
+                result = new Const(parseNumber(isNegative));
+            }
+        } else {
+            result = parseFactor();
+            if (isNegative) {
+                result = new Negate(result);
+            }
+        }
+
+        return result;
+    }
+
+    private char peekNext() {
+        if (index + 1 >= expression.length()) {
+            return '\0';
+        }
+        return expression.charAt(index + 1);
     }
 
     private int parseNumber(boolean isNegative) {
-        StringBuilder number = new StringBuilder(isNegative ? "-" : "");
+        StringBuilder number = new StringBuilder();
         while (Character.isDigit(peek())) {
             number.append(expression.charAt(index++));
         }
+        String numberStr = number.toString();
         try {
-            return Integer.parseInt(number.toString());
-        } catch (NumberFormatException e) {
-            if (number.toString().equals("-2147483648")) {
-                return Integer.MIN_VALUE;
-            } else {
-                throw new RuntimeException("Number out of range for int: " + number.toString());
+            long result = Long.parseLong(numberStr);
+            if (isNegative) {
+                result = -result;
             }
+            return (int) result; // Приведение к int обеспечит обработку переполнения
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Number format exception for string: " + numberStr, e);
         }
     }
+
 
     private String parseVariable() {
         StringBuilder variable = new StringBuilder();
@@ -85,18 +147,17 @@ public class ExpressionParser implements TripleParser {
         return variable.toString();
     }
 
-    private boolean match(char expected) {
-        if (peek() == expected) {
+    private void consume() {
+        if (index < expression.length()) {
             index++;
-            return true;
         }
-        return false;
     }
 
     private void expect(char expected) {
-        if (!match(expected)) {
+        if (peek() != expected) {
             throw new RuntimeException("Expected '" + expected + "' but found '" + peek() + "'");
         }
+        consume();
     }
 
     private char peek() {
@@ -106,8 +167,13 @@ public class ExpressionParser implements TripleParser {
     }
 
     private void skipWhitespace() {
-        while (index < expression.length() && Character.isWhitespace(expression.charAt(index))) {
+        while (index < expression.length() && isWhitespaceOrInvisible(expression.charAt(index))) {
             index++;
         }
+    }
+
+    private boolean isWhitespaceOrInvisible(char c) {
+        // Проверяем, является ли символ пробелом, табуляцией или переносом строки
+        return Character.isWhitespace(c) || c == '\t' || c == '\n' || c == '\r';
     }
 }
