@@ -5,7 +5,6 @@ import expression.ToMiniString;
 import expression.TripleExpression;
 import expression.Variable;
 import expression.common.Op;
-import expression.parser.ExpressionParser;
 import expression.parser.ParserTestSet;
 
 import java.util.ArrayList;

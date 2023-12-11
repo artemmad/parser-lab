@@ -6,8 +6,12 @@ public class Add extends AbstractBinaryOperation {
     }
 
     @Override
-    public int calculate(int first, int second) {
-        return first + second;
+    protected int calculate(int firstOperand, int secondOperand) {
+        long result = (long) firstOperand + (long) secondOperand;
+        if (result > Integer.MAX_VALUE || result < Integer.MIN_VALUE) {
+            throw new ArithmeticException("Overflow");
+        }
+        return (int) result;
     }
 
     @Override

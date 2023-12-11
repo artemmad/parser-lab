@@ -8,7 +8,11 @@ public class Multiply extends AbstractBinaryOperation {
 
     @Override
     protected int calculate(int firstOperand, int secondOperand) {
-        return firstOperand * secondOperand;
+        long result = (long) firstOperand * (long) secondOperand;
+        if (result > Integer.MAX_VALUE || result < Integer.MIN_VALUE) {
+            throw new ArithmeticException("Overflow");
+        }
+        return (int) result;
     }
 
     @Override
